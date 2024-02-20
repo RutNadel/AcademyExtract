@@ -11,20 +11,23 @@ class HebrewAcademyFetcher:
         self._soup = None
 
     async def fetch_html_response(self, word):
-        if ' ' in word:
-            print(f"Word '{word}' contains more than one word. Skipping fetch. צרוף")
-            return False
-        url = self._basic_url + quote(word, encoding='utf-8')
+        try:
+            if ' ' in word:
+                print(f"Word '{word}' contains more than one word. Skipping fetch. צרוף")
+                return False
+            url = self._basic_url + quote(word, encoding='utf-8')
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 404:
-                    print(f"404 - Page not found for word: {word}")
-                    return False
-                elif response.status in range(200, 300):
-                    html = await response.text()
-                    self._soup = BeautifulSoup(html, 'html.parser')
-                    return True
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 404:
+                        print(f"404 - Page not found for word: {word}")
+                        return False
+                    elif response.status in range(200, 300):
+                        html = await response.text()
+                        self._soup = BeautifulSoup(html, 'html.parser')
+                        return True
+        except TypeError:
+            print(word)
 
     async def process_html_response(self, word):
         is_found = await self.fetch_html_response(word)

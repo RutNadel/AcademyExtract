@@ -16,10 +16,10 @@ async def main():
         # processor.add_properly_punctuated_column()#delete this function pls
         hebrew_academy_fetcher = HebrewAcademyFetcher()
         tasks = []
-        count = 0
+        # count = 0
         for sheet_name, df in processor.dataframes.items():
-            count += 1
-            if count == 6:
+            # count += 1
+            if 1==1: # if count == 6:
                 print(f"Processing data from sheet '{sheet_name}':")
                 task = asyncio.create_task(hebrew_academy_fetcher.fetch_and_process_words(df))
                 tasks.append(task)

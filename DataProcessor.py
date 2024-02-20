@@ -15,14 +15,10 @@ class DataProcessor:
             for col in df.columns:
                 for i, val in enumerate(df[col]):
                     if isinstance(val, str):
-                        # df.at[i, col] = val.split(' (')[0].strip()
-                        # Remove content inside parentheses
                         val = val.split(' (')[0].strip()
 
-                        # Remove '!' and trailing whitespace
                         val = val.replace('!', '').strip()
 
-                        # Remove '\' and everything after it
                         if '/' in val:
                             val = val.split('/')[0].strip()
 
