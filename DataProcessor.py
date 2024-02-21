@@ -24,12 +24,3 @@ class DataProcessor:
 
                         df.at[i, col] = val
         self._dataframes = self._dataframes
-
-    def is_properly_punctuated(self, text):
-        return True
-
-    def add_properly_punctuated_column(self):
-        for sheet_name, df in self._dataframes.items():
-            properly_punctuated_column = df.apply(lambda x: self.is_properly_punctuated(x['original']), axis=1)
-            self._dataframes[sheet_name] = df.assign(properlyPunctuated=properly_punctuated_column)
-

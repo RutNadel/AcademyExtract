@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import os
-from ExcelExported import ExcelExporter
+from ExcelExporter import ExcelExporter
 
 
 class TestExcelExporter(unittest.TestCase):
