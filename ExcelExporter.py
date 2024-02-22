@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class ExcelExporter:
     def __init__(self, dataframes, excel_path):
         self._dataframes = dataframes
