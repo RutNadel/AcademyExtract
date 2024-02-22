@@ -7,10 +7,6 @@ class HebrewAcademyFetcher:
 
     async def fetch_html_response(self, session, word):
         try:
-            # if ' ' in word:
-            #     print(f"Word '{word}' contains more than one word. Skipping fetch. צרוף")
-            #     return False
-
             url = self._basic_url + quote(word, encoding='utf-8')
 
             async with session.get(url) as response:
