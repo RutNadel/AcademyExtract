@@ -10,12 +10,12 @@ from HebrewAcademyFetcher import HebrewAcademyFetcher
 
 
 async def main():
-    input_file_path = "..\\hebBigShort.xlsx"
+    input_file_path = "..\\EH_T-Z.xlsx"
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
-    original_column = 'original'
+    original_column = 'Trns'
 
     try:
-        undoubted = ExcelReader(input_file_path)
+        undoubted = ExcelReader(input_file_path, original_column)
         undoubted.read_sheets()
 
         if undoubted.dataframes is not None:

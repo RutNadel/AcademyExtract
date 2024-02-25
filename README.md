@@ -8,5 +8,6 @@ Extracts academy details and words from their website
 * openpyxl
 * aiohttp
 * pyarrow - even you don't import it
+* xlsxwriter - for split
 
 python version: 3.12
