@@ -10,9 +10,9 @@ from HebrewAcademyFetcher import HebrewAcademyFetcher
 
 
 async def main():
-    input_file_path = "..\\EH_T-Z.xlsx"
+    input_file_path = "..\\hebBigShort.xlsx"
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
-    original_column = 'Trns'
+    original_column = 'original'#'Trns'
 
     try:
         undoubted = ExcelReader(input_file_path, original_column)
@@ -42,7 +42,7 @@ async def fetch_and_process_data(processor, original_column, hebrew_academy_fetc
         for sheet_name, df in processor.dataframes.items():
             for index, row in df.iterrows():
                 word = row[original_column]
-                task = asyncio.create_task(hebrew_academy_fetcher.fetch_and_process_word(session, word, df))
+                task = asyncio.create_task(hebrew_academy_fetcher.fetch_and_process_word(session, word))
                 tasks.append(task)
     except Exception as e:
         print("An error occurred while fetching and processing data:", e)
