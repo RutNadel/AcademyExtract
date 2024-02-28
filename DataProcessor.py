@@ -50,11 +50,16 @@ class DataProcessor:
         self._dataframes = self._dataframes
 
     def update_dataframe(self, only_is_dotted=True):
-
         try:
             index = -1
             for sheet_name, df in self.dataframes.items():
                 isDotted = self._columns.get("isDotted")
+
+                columns_to_assign = ["pos", "root", "gender", "pl"]
+                default_value = "-"
+                for column_name in columns_to_assign:
+                    self.dataframes[sheet_name][column_name] = default_value
+
                 self.dataframes[sheet_name]["isDotted"] = True
 
                 num_rows = len(df)
@@ -82,6 +87,7 @@ class DataProcessor:
                                 self.dataframes[sheet_name].iloc[row, isDotted] = True
                                 if not only_is_dotted:
                                     word_info = self._results[index][word_info_index]
+
                                     self._fill_data(sheet_name, word_info, row)
 
                         except Exception as e:
@@ -91,16 +97,10 @@ class DataProcessor:
 
     def _fill_data(self, sheet_name, word_info, row):
 
-        columns_to_assign = ["pos", "root", "gender", "pl"]
-        default_value = "-"
-        for column_name in columns_to_assign:
-            self.dataframes[sheet_name][column_name] = default_value
         columns_names = ["original", "isDotted", "pos", "root", "gender", "pl"]
         original, isDotted, pos, root, gender, pl = (
             self._columns.get(column_name) for column_name in columns_names
         )
-        # fill data
-
 
         pl_value = word_info[0].get('נטייה', '-')
         clean_pl_value = pl_value.replace("לכל הנטיות", "")
