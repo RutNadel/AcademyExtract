@@ -41,7 +41,8 @@ class DataProcessor:
 
         self._dataframes = self._dataframes
 
-    def update_dataframe(self):
+    def update_dataframe(self, only_is_dotted=True):
+
         try:
             index = -1
             for sheet_name, df in self.dataframes.items():

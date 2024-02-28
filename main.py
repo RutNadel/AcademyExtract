@@ -15,6 +15,7 @@ async def main():
     original_column = 'original'#'Trns'
 
     try:
+
         undoubted = ExcelReader(input_file_path, original_column)
         undoubted.read_sheets()
 
@@ -27,7 +28,7 @@ async def main():
                 results = await fetch_and_process_data(processor, original_column, hebrew_academy_fetcher, session)
 
             processor.results = results
-            processor.update_dataframe()
+            processor.update_dataframe(only_is_dotted=False)
 
             exporter = ExcelExporter(processor.dataframes, output_file_path)
             exporter.export_to_excel()

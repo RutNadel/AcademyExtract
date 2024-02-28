@@ -12,12 +12,12 @@ class HebrewAcademyFetcher:
 
             async with session.get(url) as response:
                 if response.status == 404:
-                    print(f" False | 404 - Page miss for word: {word}")
+                    #print(f" False | 404 - Page miss for word: {word}")
                     return False, None, word
                 elif response.status in range(200, 300):
                     html = await response.text()
                     word_info = HebrewAcademyFetcher.extract_and_process(html)
-                    print(f" True | 200+ Page found for word: {word}")
+                    #print(f" True | 200+ Page found for word: {word}")
                     return True, word_info, word
         except Exception as e:
             print(word, e)
@@ -25,6 +25,9 @@ class HebrewAcademyFetcher:
 
     async def fetch_and_process_word(self, session, word):
         is_found = await self.fetch_html_response(session, word)
+        if is_found is None:
+            return False, None, word
+        print(word, end=" ")
         return is_found
 
     @staticmethod

@@ -37,7 +37,7 @@ def split_excel_file(input_file, output_prefix, max_rows_per_file):
 
 if __name__ == "__main__":
     input_file = '..\\engHeb.xlsx'
-    output_prefix = '..\\EH'
+    output_prefix = '..\\H'
     max_rows_per_file = 10000
 
     split_excel_file(input_file, output_prefix, max_rows_per_file)
