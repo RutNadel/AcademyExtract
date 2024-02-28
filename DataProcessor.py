@@ -7,6 +7,14 @@ class DataProcessor:
     def __init__(self, dataframes):
         self._dataframes = dataframes
         self._results = None
+        self._columns = {
+            "original": 0,
+            "isDotted": 1,
+            "pos": 2,
+            "root": 3,
+            "gender": 4,
+            "pl": 5
+        }
 
     @property
     def dataframes(self):
@@ -46,23 +54,12 @@ class DataProcessor:
         try:
             index = -1
             for sheet_name, df in self.dataframes.items():
-
-                self.dataframes[sheet_name]["pos"] = "-"
-                self.dataframes[sheet_name]["root"] = "-"
-                self.dataframes[sheet_name]["gender"] = "-"
-                self.dataframes[sheet_name]["pl"] = "-"
+                isDotted = self._columns.get("isDotted")
                 self.dataframes[sheet_name]["isDotted"] = True
-
-                original = 0
-                pos = 1
-                root = 2
-                gender = 3
-                pl = 4
-                isDotted = 5
 
                 num_rows = len(df)
 
-                for i in range(num_rows):
+                for row in range(num_rows):
 
                     if index < len(self._results):
                         index += 1
@@ -76,38 +73,51 @@ class DataProcessor:
                         try:
                             is_data_for_word = self._results[index][is_found_index]
                             if is_data_for_word is None:
-                                self.dataframes[sheet_name].iloc[i, isDotted] = missing_value
+                                self.dataframes[sheet_name].iloc[row, isDotted] = missing_value
                             elif is_data_for_word == 'nan':
-                                self.dataframes[sheet_name].iloc[i, isDotted] = missing_value
+                                self.dataframes[sheet_name].iloc[row, isDotted] = missing_value
                             elif is_data_for_word is False:
-                                self.dataframes[sheet_name].iloc[i, isDotted] = is_data_for_word
+                                self.dataframes[sheet_name].iloc[row, isDotted] = is_data_for_word
                             elif is_data_for_word is True:
-
-                                # fill data
-                                word_info = self._results[index][word_info_index]
-
-                                pl_value = word_info[0].get('נטייה', '-')
-                                clean_pl_value = pl_value.replace("לכל הנטיות", "")
-
-                                building_value = word_info[0].get('בניין', '-')
-                                gender_value = word_info[0].get('מין', '-')
-                                pos_value = word_info[0].get('חלק דיבר', '-')
-                                if pos_value == '-':
-                                    if gender_value:
-                                        pos_value = 'שם עצם'
-                                    elif building_value:
-                                        pos_value = 'פועל'
-
-                                self.dataframes[sheet_name].iloc[i, pos] = pos_value
-                                self.dataframes[sheet_name].iloc[i, root] = word_info[0].get('שורש', '-')
-                                self.dataframes[sheet_name].iloc[i, gender] = gender_value
-                                self.dataframes[sheet_name].iloc[i, pl] = clean_pl_value
-                                #'נטיית הפועל'
-                                self.dataframes[sheet_name].iloc[i, isDotted] = True
+                                self.dataframes[sheet_name].iloc[row, isDotted] = True
+                                if not only_is_dotted:
+                                    word_info = self._results[index][word_info_index]
+                                    self._fill_data(sheet_name, word_info, row)
 
                         except Exception as e:
                             print("Error occurred while updating dataframe:", e)
         except Exception as e:
             print("An error occurred while updating dataframe:", e)
 
+    def _fill_data(self, sheet_name, word_info, row):
+
+        columns_to_assign = ["pos", "root", "gender", "pl"]
+        default_value = "-"
+        for column_name in columns_to_assign:
+            self.dataframes[sheet_name][column_name] = default_value
+        columns_names = ["original", "isDotted", "pos", "root", "gender", "pl"]
+        original, isDotted, pos, root, gender, pl = (
+            self._columns.get(column_name) for column_name in columns_names
+        )
+        # fill data
+
+
+        pl_value = word_info[0].get('נטייה', '-')
+        clean_pl_value = pl_value.replace("לכל הנטיות", "")
+
+        building_value = word_info[0].get('בניין', '-')
+        gender_value = word_info[0].get('מין', '-')
+        pos_value = word_info[0].get('חלק דיבר', '-')
+        if pos_value == '-':
+            if gender_value:
+                pos_value = 'שם עצם'
+            elif building_value:
+                pos_value = 'פועל'
+
+        self.dataframes[sheet_name].iloc[row, pos] = pos_value
+        self.dataframes[sheet_name].iloc[row, root] = word_info[0].get('שורש', '-')
+        self.dataframes[sheet_name].iloc[row, gender] = gender_value
+        self.dataframes[sheet_name].iloc[row, pl] = clean_pl_value
+        # 'נטיית הפועל'
+        self.dataframes[sheet_name].iloc[row, isDotted] = True
 
