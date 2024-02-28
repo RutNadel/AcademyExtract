@@ -10,12 +10,12 @@ from HebrewAcademyFetcher import HebrewAcademyFetcher
 
 
 async def main():
-    input_file_path = "..\\hebBigShort.xlsx"
+    input_file_path = "..\\xlSplitted\\H_א-ל.xlsx"
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
-    original_column = 'original'#'Trns'
+    original_column = 'original'  # 'Trns'
+    only_is_dotted = False
 
     try:
-
         undoubted = ExcelReader(input_file_path, original_column)
         undoubted.read_sheets()
 
@@ -28,13 +28,13 @@ async def main():
                 results = await fetch_and_process_data(processor, original_column, hebrew_academy_fetcher, session)
 
             processor.results = results
-            processor.update_dataframe(only_is_dotted=False)
+            processor.update_dataframe(only_is_dotted=only_is_dotted)
 
             exporter = ExcelExporter(processor.dataframes, output_file_path)
             exporter.export_to_excel()
 
     except Exception as e:
-        print("An error occurred:", e)
+        print("An error occurred while main process:", e)
 
 
 async def fetch_and_process_data(processor, original_column, hebrew_academy_fetcher, session):

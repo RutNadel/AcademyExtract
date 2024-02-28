@@ -41,7 +41,7 @@ class DataProcessor:
                         cleaned_val = cleaned_val.split(' (')[0].strip()
                         cleaned_val = cleaned_val.replace('!', '').strip()
                         cleaned_val = cleaned_val.replace('?', '').strip()
-                        cleaned_val = cleaned_val.replace('-', '').strip()
+                        # cleaned_val = cleaned_val.replace('-', '').strip()
                         if '/' in cleaned_val:
                             cleaned_val = cleaned_val.split('/')[0].strip()
 
@@ -55,12 +55,10 @@ class DataProcessor:
             for sheet_name, df in self.dataframes.items():
                 isDotted = self._columns.get("isDotted")
 
-                columns_to_assign = ["pos", "root", "gender", "pl"]
+                columns_to_assign = ["isDotted", "pos", "root", "gender", "pl"]
                 default_value = "-"
                 for column_name in columns_to_assign:
                     self.dataframes[sheet_name][column_name] = default_value
-
-                self.dataframes[sheet_name]["isDotted"] = True
 
                 num_rows = len(df)
 
@@ -96,28 +94,31 @@ class DataProcessor:
             print("An error occurred while updating dataframe:", e)
 
     def _fill_data(self, sheet_name, word_info, row):
+        try:
+            columns_names = ["original", "isDotted", "pos", "root", "gender", "pl"]
+            original, isDotted, pos, root, gender, pl = (
+                self._columns.get(column_name) for column_name in columns_names
+            )
+            if len(word_info) > 0:  # sometimes few table
+                first_table = 0
+                pl_value = word_info[first_table].get('נטייה', '-')
+                clean_pl_value = pl_value.replace("לכל הנטיות", "")
 
-        columns_names = ["original", "isDotted", "pos", "root", "gender", "pl"]
-        original, isDotted, pos, root, gender, pl = (
-            self._columns.get(column_name) for column_name in columns_names
-        )
+                building_value = word_info[first_table].get('בניין', '-')
+                gender_value = word_info[first_table].get('מין', '-')
+                pos_value = word_info[first_table].get('חלק דיבר', '-')
+                if pos_value == '-':
+                    if gender_value:
+                        pos_value = 'שם עצם'
+                    elif building_value:
+                        pos_value = 'פועל'
 
-        pl_value = word_info[0].get('נטייה', '-')
-        clean_pl_value = pl_value.replace("לכל הנטיות", "")
+                self.dataframes[sheet_name].iloc[row, pos] = pos_value
+                self.dataframes[sheet_name].iloc[row, root] = word_info[first_table].get('שורש', '-')
+                self.dataframes[sheet_name].iloc[row, gender] = gender_value
+                self.dataframes[sheet_name].iloc[row, pl] = clean_pl_value
 
-        building_value = word_info[0].get('בניין', '-')
-        gender_value = word_info[0].get('מין', '-')
-        pos_value = word_info[0].get('חלק דיבר', '-')
-        if pos_value == '-':
-            if gender_value:
-                pos_value = 'שם עצם'
-            elif building_value:
-                pos_value = 'פועל'
-
-        self.dataframes[sheet_name].iloc[row, pos] = pos_value
-        self.dataframes[sheet_name].iloc[row, root] = word_info[0].get('שורש', '-')
-        self.dataframes[sheet_name].iloc[row, gender] = gender_value
-        self.dataframes[sheet_name].iloc[row, pl] = clean_pl_value
-        # 'נטיית הפועל'
-        self.dataframes[sheet_name].iloc[row, isDotted] = True
+                self.dataframes[sheet_name].iloc[row, isDotted] = True
+        except Exception as e:
+            print(f"Error occurred while filling dataframe: {e}")
 
