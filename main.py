@@ -10,7 +10,7 @@ from HebrewAcademyFetcher import HebrewAcademyFetcher
 
 
 async def main():
-    input_file_path = "..\\xlSplitted\\H_א-ל.xlsx"
+    input_file_path = "..\\xlSplitted\\s_מ-ת.xlsx"
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
     original_column = 'original'  # 'Trns'
     only_is_dotted = False

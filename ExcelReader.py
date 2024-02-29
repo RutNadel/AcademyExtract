@@ -25,4 +25,3 @@ class ExcelReader:
             print(f"File '{self.file_path}' not found.")
         except Exception as e:
             print(f"An error occurred while reading the file: {e}")
-

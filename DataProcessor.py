@@ -1,6 +1,9 @@
-import numpy as np
-import pandas as pd
 import re
+from collections import namedtuple
+
+
+Config = namedtuple('Config', ['value'])
+default = Config(value="-")
 
 
 class DataProcessor:
@@ -56,9 +59,9 @@ class DataProcessor:
                 isDotted = self._columns.get("isDotted")
 
                 columns_to_assign = ["isDotted", "pos", "root", "gender", "pl"]
-                default_value = "-"
+
                 for column_name in columns_to_assign:
-                    self.dataframes[sheet_name][column_name] = default_value
+                    self.dataframes[sheet_name][column_name] = default.value
 
                 num_rows = len(df)
 
@@ -101,24 +104,23 @@ class DataProcessor:
             )
             if len(word_info) > 0:  # sometimes few table
                 first_table = 0
-                pl_value = word_info[first_table].get('נטייה', '-')
+                pl_value = word_info[first_table].get('נטייה', default.value)
                 clean_pl_value = pl_value.replace("לכל הנטיות", "")
 
-                building_value = word_info[first_table].get('בניין', '-')
-                gender_value = word_info[first_table].get('מין', '-')
-                pos_value = word_info[first_table].get('חלק דיבר', '-')
-                if pos_value == '-':
-                    if gender_value:
+                building_value = word_info[first_table].get('בניין', default.value)
+                gender_value = word_info[first_table].get('מין', default.value)
+                pos_value = word_info[first_table].get('חלק דיבר', default.value)
+                if pos_value == default.value:
+                    if gender_value != default.value:  #כאשר יש מין זה שם עצם
                         pos_value = 'שם עצם'
-                    elif building_value:
+                    elif building_value:  # כאשר יש בנין זה פועל
                         pos_value = 'פועל'
 
                 self.dataframes[sheet_name].iloc[row, pos] = pos_value
-                self.dataframes[sheet_name].iloc[row, root] = word_info[first_table].get('שורש', '-')
+                self.dataframes[sheet_name].iloc[row, root] = word_info[first_table].get('שורש', default.value)
                 self.dataframes[sheet_name].iloc[row, gender] = gender_value
                 self.dataframes[sheet_name].iloc[row, pl] = clean_pl_value
 
                 self.dataframes[sheet_name].iloc[row, isDotted] = True
         except Exception as e:
             print(f"Error occurred while filling dataframe: {e}")
-

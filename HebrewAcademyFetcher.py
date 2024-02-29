@@ -8,7 +8,10 @@ class HebrewAcademyFetcher:
 
     async def fetch_html_response(self, session, word):
         try:
-            url = self._basic_url + quote(word, encoding='utf-8')
+            if isinstance(word, str):
+                url = self._basic_url + quote(word, encoding='utf-8')
+            else:
+                return False, None, "the word is empyt"
 
             async with session.get(url) as response:
                 if response.status == 404:
@@ -53,6 +56,3 @@ class HebrewAcademyFetcher:
             extracted_info_list.append(extracted_info)
 
         return extracted_info_list
-
-
-
