@@ -3,17 +3,17 @@ class RowResult:
     Represents a result obtained from sending a row from Excel to an HTTP server asynchronously.
 
     Attributes:
-        is_page_found (bool): Indicates whether the page associated with the row was found.
-        table_info (list of dict): Information about the table associated with the row, where each dictionary represents a row in the table.
+        is_page_found: (bool): Indicates whether the page associated with the row was found.
+        table_info: (list of dict): Information about the table associated with the row, where each dictionary represents a row in the table.
         word (str): The word associated with the row.
-        idioms (list of str): List of idioms associated with the row.
+        idioms: (list of str): List of idioms associated with the row.
     """
 
-    def __init__(self):
-        self._is_page_found = None
-        self._table_info = None
-        self._word = None
-        self._idioms = None
+    def __init__(self, is_page_found=None, table_info=None, word=None, idioms=None):
+        self._is_page_found = is_page_found
+        self._table_info = table_info
+        self._word = word
+        self._idioms = idioms
 
     @property
     def is_page_found(self):
@@ -58,16 +58,3 @@ class RowResult:
     @idioms.setter
     def idioms(self, value):
         self._idioms = value
-
-
-# Example usage:
-result = RowResult()
-result.is_page_found = True
-result.table_info = [{"key1": "value1"}, {"key2": "value2"}]
-result.word = "Some word"
-result.idioms = ["idiom1", "idiom2"]
-
-print(result.is_page_found)
-print(result.table_info)
-print(result.word)
-print(result.idioms)

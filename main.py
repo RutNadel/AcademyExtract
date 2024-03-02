@@ -25,10 +25,10 @@ async def main():
 
             async with aiohttp.ClientSession() as session:
                 hebrew_academy_fetcher = HebrewAcademyFetcher()
-                results = await fetch_and_process_data(processor, original_column, hebrew_academy_fetcher, session)
+                row_results = await fetch_and_process_data(processor, original_column, hebrew_academy_fetcher, session)
 
-            processor.results = results
-            processor.update_dataframe(only_is_dotted=only_is_dotted)
+            processor.row_results = row_results
+            processor.fill_table_info(only_is_dotted=only_is_dotted)
             processor.add_idioms_sheet()
             exporter = ExcelExporter(processor.dataframes, output_file_path)
             exporter.export_to_excel()

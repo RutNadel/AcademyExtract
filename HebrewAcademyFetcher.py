@@ -1,6 +1,7 @@
 from urllib.parse import quote
 from bs4 import BeautifulSoup
 import re
+from RowResult import RowResult
 
 
 class HebrewAcademyFetcher:
@@ -9,32 +10,34 @@ class HebrewAcademyFetcher:
 
     async def fetch_html_response(self, session, word):
         try:
+
             if isinstance(word, str):
                 url = self._basic_url + quote(word, encoding='utf-8')
             else:
-                return False, None, "the word is empyt", None
+                return RowResult(False, None, "the word is empyt", None)
 
             async with session.get(url) as response:
                 if response.status == 404:
                     #print(f" False | 404 - Page miss for word: {word}")
-                    return False, None, word, None
+                    return RowResult(False, None, word, None)
                 elif response.status in range(200, 300):
                     html = await response.text()
                     word_full_details = HebrewAcademyFetcher.extract_and_process(html, word)
-                    word_info = word_full_details[0]
-                    word_tserfuim = word_full_details[1]
+                    table_info = word_full_details[0]
+                    idioms = word_full_details[1]
                     #print(f" True | 200+ Page found for word: {word}")
-                    return True, word_info, word, word_tserfuim
+                    return RowResult(True, table_info, word, idioms)
         except Exception as e:
-            print(word, e)
-            return False, None, word, None
+            print(f"Error occured while fetch html response with the word: {word} got the error messange: {e}")
+            return RowResult(False, None, word, None)
 
     async def fetch_and_process_word(self, session, word):
-        is_found = await self.fetch_html_response(session, word)
-        if is_found is None:
-            return False, None, word, None
-        print(word, end=" ")
-        return is_found
+        row_result = await self.fetch_html_response(session, word)
+        if row_result is None:
+            return RowResult(False, None, word, None)
+
+        print(word, end=" . ")
+        return row_result
 
     @staticmethod
     def extract_and_process(html, word):
@@ -83,9 +86,7 @@ class HebrewAcademyFetcher:
                 if hebrew_text:
                     hebrew_texts.append(hebrew_text[0].strip())
 
-        # Print the extracted Hebrew text
-        for text in hebrew_texts:
-            print(text)
+
 
         html_values = [tables_list, hebrew_texts]
         return html_values
