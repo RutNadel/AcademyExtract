@@ -88,7 +88,7 @@ class DataProcessor:
                             idioms_info = self._row_results[row].idioms
 
                             self._fill_data(sheet_name, word_info, row)
-                            self.find_idioms(sheet_name, idioms_info, row)
+                            self._find_idioms(sheet_name, idioms_info, row)
 
                 except IndexError:
                     print("Error: Index out of range while updating dataframe")
@@ -124,7 +124,7 @@ class DataProcessor:
         except Exception as e:
             print(f"Error occurred while filling dataframe: {e}")
 
-    def find_idioms(self, sheet_name, idioms_info, row):
+    def _find_idioms(self, sheet_name, idioms_info, row):
         try:
             if idioms_info and len(idioms_info) > 0:  # sometimes few table
                 self._idioms.append(idioms_info)

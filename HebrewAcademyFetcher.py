@@ -22,7 +22,7 @@ class HebrewAcademyFetcher:
                     return RowResult(False, None, word, None)
                 elif response.status in range(200, 300):
                     html = await response.text()
-                    word_full_details = HebrewAcademyFetcher.extract_and_process(html, word)
+                    word_full_details = HebrewAcademyFetcher._extract_and_process(html, word)
                     table_info = word_full_details[0]
                     idioms = word_full_details[1]
                     #print(f" True | 200+ Page found for word: {word}")
@@ -40,7 +40,7 @@ class HebrewAcademyFetcher:
         return row_result
 
     @staticmethod
-    def extract_and_process(html, word):
+    def _extract_and_process(html, word):
         """
         extract specific values from the html (like tables or links or lists)
         :param html:
@@ -72,21 +72,17 @@ class HebrewAcademyFetcher:
         if word == "יָד":
             print('h')
 
-        # list_items = soup.find_all('ul', class_='tserufim more')
         list_items = soup.find_all('ul', class_=['tserufim', 'tserufim more'])
 
-        # Extract the Hebrew text from each list of items
         hebrew_texts = []
         for ul in list_items:
             items = ul.find_all('a')
             for item in items:
-                text = item.text.strip()  # Remove leading and trailing whitespace
+                text = item.text.strip()
                 # Use regular expression to extract Hebrew text
                 hebrew_text = re.findall(r'[\u0590-\u05FF\s]+', text)
                 if hebrew_text:
                     hebrew_texts.append(hebrew_text[0].strip())
-
-
 
         html_values = [tables_list, hebrew_texts]
         return html_values
