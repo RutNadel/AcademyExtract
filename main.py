@@ -10,7 +10,7 @@ from HebrewAcademyFetcher import HebrewAcademyFetcher
 
 
 async def main():
-    input_file_path = "..\\xlSplitted\\s_מ-ת.xlsx"
+    input_file_path = "..\\xl\\hebBigShort.xlsx"
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
     original_column = 'original'  # 'Trns'
     only_is_dotted = False
@@ -29,7 +29,7 @@ async def main():
 
             processor.results = results
             processor.update_dataframe(only_is_dotted=only_is_dotted)
-
+            processor.add_idioms_sheet()
             exporter = ExcelExporter(processor.dataframes, output_file_path)
             exporter.export_to_excel()
 
@@ -48,6 +48,8 @@ async def fetch_and_process_data(processor, original_column, hebrew_academy_fetc
     except Exception as e:
         print("An error occurred while fetching and processing data:", e)
     return await asyncio.gather(*tasks)
+
+
 
 
 if __name__ == "__main__":
