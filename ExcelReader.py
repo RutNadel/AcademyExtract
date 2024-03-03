@@ -22,6 +22,6 @@ class ExcelReader:
                 else:
                     print(f"No '{self._column_name}' column found in sheet '{sheet_name}'. Skipping...")
         except FileNotFoundError:
-            print(f"File '{self.file_path}' not found.")
+            raise FileNotFoundError(f"File '{self._file_path}' not found.")
         except Exception as e:
-            print(f"An error occurred while reading the file: {e}")
+            raise IOError(f"An error occurred while reading the file: {e}")

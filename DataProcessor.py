@@ -5,8 +5,8 @@ from typing import List
 import pandas as pd
 from RowResult import RowResult
 
-Config = namedtuple('Config', ['value'])
-default = Config(value="-")
+DEFAULT_VALUE = "-"
+MISSING_VALUE = False
 
 
 class DataProcessor:
@@ -66,36 +66,36 @@ class DataProcessor:
             columns_to_assign = ["isDotted", "pos", "root", "gender", "pl"]
 
             for column_name in columns_to_assign:
-                df[column_name] = default.value
+                df[column_name] = DEFAULT_VALUE
 
             num_rows = len(df)
 
-            for row in range(num_rows):
-                if row >= len(self._row_results):
+            for row_index in range(num_rows):
+                if row_index >= len(self._row_results):
                     break
 
-                missing_value = False
-
                 try:
-                    is_data_for_word = self._row_results[row].is_page_found
+                    word = self._row_results[row_index].word
+                    is_data_for_word = self._row_results[row_index].is_page_found
                     if is_data_for_word is None or is_data_for_word == 'nan':
-                        df.iloc[row, is_dotted_col] = missing_value
+                        df.iloc[row_index, is_dotted_col] = MISSING_VALUE
                     else:
-                        df.iloc[row, is_dotted_col] = bool(is_data_for_word)
+                        df.iloc[row_index, is_dotted_col] = bool(is_data_for_word)
 
                         if not only_is_dotted:
-                            word_info = self._row_results[row].table_info
-                            idioms_info = self._row_results[row].idioms
+                            word_info = self._row_results[row_index].table_info
+                            idioms_info = self._row_results[row_index].idioms
 
-                            self._fill_data(sheet_name, word_info, row)
-                            self._find_idioms(sheet_name, idioms_info, row)
+                            self._fill_data(sheet_name, word_info, row_index)
+                            self._find_idioms(sheet_name, idioms_info, row_index, word)
 
-                except IndexError:
-                    print("Error: Index out of range while updating dataframe")
+                except IndexError as idx_err:
+                    print("Error: Index out of range while updating dataframe:", idx_err)
                 except Exception as e:
-                    print(f"Error occurred while updating dataframe at row {row}:", e)
-    
-    def _fill_data(self, sheet_name, word_info, row):
+                    print(f"Error occurred while updating dataframe at sheet :'{sheet_name}' "
+                          f" at row_index {row_index}:", e)
+
+    def _fill_data(self, sheet_name, word_info, row_index):
         try:
             columns_names = ["original", "isDotted", "pos", "root", "gender", "pl"]
             original, isDotted, pos, root, gender, pl = (
@@ -103,33 +103,33 @@ class DataProcessor:
             )
             if word_info and len(word_info) > 0:  # sometimes few table
                 first_table = 0
-                pl_value = word_info[first_table].get('נטייה', default.value)
+                pl_value = word_info[first_table].get('נטייה', DEFAULT_VALUE)
                 clean_pl_value = pl_value.replace("לכל הנטיות", "")
 
-                building_value = word_info[first_table].get('בניין', default.value)
-                gender_value = word_info[first_table].get('מין', default.value)
-                pos_value = word_info[first_table].get('חלק דיבר', default.value)
-                if pos_value == default.value:
-                    if gender_value != default.value:  # כאשר יש מין זה שם עצם
+                building_value = word_info[first_table].get('בניין', DEFAULT_VALUE)
+                gender_value = word_info[first_table].get('מין', DEFAULT_VALUE)
+                pos_value = word_info[first_table].get('חלק דיבר', DEFAULT_VALUE)
+                if pos_value == DEFAULT_VALUE:
+                    if gender_value != DEFAULT_VALUE:  # כאשר יש מין זה שם עצם
                         pos_value = 'שם עצם'
                     elif building_value:  # כאשר יש בנין זה פועל
                         pos_value = 'פועל'
 
-                self.dataframes[sheet_name].iloc[row, pos] = pos_value
-                self.dataframes[sheet_name].iloc[row, root] = word_info[first_table].get('שורש', default.value)
-                self.dataframes[sheet_name].iloc[row, gender] = gender_value
-                self.dataframes[sheet_name].iloc[row, pl] = clean_pl_value
+                self.dataframes[sheet_name].iloc[row_index, pos] = pos_value
+                self.dataframes[sheet_name].iloc[row_index, root] = word_info[first_table].get('שורש', DEFAULT_VALUE)
+                self.dataframes[sheet_name].iloc[row_index, gender] = gender_value
+                self.dataframes[sheet_name].iloc[row_index, pl] = clean_pl_value
 
-                self.dataframes[sheet_name].iloc[row, isDotted] = True
+                self.dataframes[sheet_name].iloc[row_index, isDotted] = True
         except Exception as e:
-            print(f"Error occurred while filling dataframe: {e}")
+            raise ValueError(f"Error occurred while filling dataframe, at sheetname {sheet_name}, with the wordinfo: {word_info}: {e}")
 
-    def _find_idioms(self, sheet_name, idioms_info, row):
+    def _find_idioms(self, sheet_name, idioms_info, row_index, word):
         try:
             if idioms_info and len(idioms_info) > 0:  # sometimes few table
                 self._idioms.append(idioms_info)
         except Exception as e:
-            print(f"Error occurred while filling idioms: {e}")
+            print(f"Error occurred while filling idioms for word:'{word}' : {e}")
 
     def add_idioms_sheet(self):
         flattened_idioms = [item for sublist in self._idioms for item in sublist]
