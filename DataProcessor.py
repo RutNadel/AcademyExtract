@@ -57,7 +57,7 @@ class DataProcessor:
 
         self._dataframes = self._dataframes
 
-    def fill_table_info(self, only_is_dotted=True):
+    def fill_values_from_html(self, only_is_dotted=True):
         for sheet_name, df in self.dataframes.items():
             is_dotted_col = self._columns.get("isDotted", None)
             if is_dotted_col is None:
