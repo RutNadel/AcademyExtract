@@ -12,10 +12,15 @@ from RowResult import RowResult
 
 async def main():
     # input_file_path = "..\\xlSplitted\\s_ח-ל.xlsx"
-    # input_file_path = "..\\xl\\hebBigShort.xlsx"
-    # input_file_path = "..\\xlSplitted\\s_מ-ת.xlsx"
-    # input_file_path = "..\\xlSplitted\\s_א-ל.xlsx"
+    #
+    #
     input_file_path = "..\\xlSplitted\\s_z.xlsx"
+    input_file_path = "..\\xlSplitted\\s_מ-ת.xlsx"
+    input_file_path = "..\\xlSplitted\\s_א-ל.xlsx"
+    input_file_path = "..\\xxx\\s_א-כ.xlsx"
+    input_file_path = "..\\xl\\hebBigShort.xlsx"
+    input_file_path = "..\\xxx\\s_ל-נ.xlsx"
+    input_file_path = "..\\xxx\\s_ס-ת.xlsx"
 
     output_file_path = os.path.splitext(input_file_path)[0] + "Output.xlsx"
     original_column = 'original'  # 'Trns'
@@ -43,7 +48,6 @@ async def fetch_and_process_data(processor, original_column, hebrew_academy_fetc
     tasks = []
     try:
         for sheet_name, df in processor.dataframes.items():
-
             for index, row in df.iterrows():
                 word = row[original_column]
                 try:

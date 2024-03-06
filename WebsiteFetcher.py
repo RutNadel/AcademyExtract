@@ -10,7 +10,7 @@ class WebsiteFetcher:
     def __init__(self, basic_url='https://hebrew-academy.org.il/keyword/'):
         self._basic_url = basic_url
 
-    async def fetch_tidy(self, session, word):
+    async def _fetch_tidy(self, session, word):
         try:
             if isinstance(word, str):
                 url = self._basic_url + quote(word, encoding='utf-8')
@@ -34,7 +34,7 @@ class WebsiteFetcher:
             return RowResult(False, None, word, None)
 
     async def fetch(self, session, word):
-        row_result = await self.fetch_tidy(session, word)
+        row_result = await self._fetch_tidy(session, word)
         if row_result is None:
             return RowResult(False, None, word, None)
         print('`', end="")

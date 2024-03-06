@@ -29,7 +29,7 @@ class TestWebsiteFetcher(unittest.IsolatedAsyncioTestCase):
         word = 'example'
 
         # Act
-        result = await fetcher.fetch_tidy(mock_session, word)
+        result = await fetcher._fetch_tidy(mock_session, word)
 
         # Assert
         self.assertEqual(result.success, True)
@@ -43,7 +43,7 @@ class TestWebsiteFetcher(unittest.IsolatedAsyncioTestCase):
         word = ''
 
         # Act
-        result = await fetcher.fetch_tidy(Mock(), word)
+        result = await fetcher._fetch_tidy(Mock(), word)
 
         # Assert
         self.assertEqual(result.success, False)
@@ -61,7 +61,7 @@ class TestWebsiteFetcher(unittest.IsolatedAsyncioTestCase):
         word = 'example'
 
         # Act
-        result = await fetcher.fetch_tidy(mock_session, word)
+        result = await fetcher._fetch_tidy(mock_session, word)
 
         # Assert
         self.assertEqual(result.success, False)

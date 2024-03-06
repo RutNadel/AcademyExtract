@@ -58,6 +58,7 @@ class DataProcessor:
         self._dataframes = self._dataframes
 
     def fill_values_from_html(self, only_is_dotted=True):
+        result_index = -1
         for sheet_name, df in self.dataframes.items():
             is_dotted_col = self._columns.get("isDotted", None)
             if is_dotted_col is None:
@@ -72,25 +73,28 @@ class DataProcessor:
 
             for row_index in range(num_rows):
                 if row_index >= len(self._row_results):
-                    break
+                    raise "Error: there isn't enough results for rows"
+
+                if result_index < len(self._row_results):
+                    result_index += 1
 
                 try:
-                    word = self._row_results[row_index].word
-                    is_data_for_word = self._row_results[row_index].is_page_found
+                    word = self._row_results[result_index].word
+                    is_data_for_word = self._row_results[result_index].is_page_found
                     if is_data_for_word is None or is_data_for_word == 'nan':
                         df.iloc[row_index, is_dotted_col] = MISSING_VALUE
                     else:
                         df.iloc[row_index, is_dotted_col] = bool(is_data_for_word)
 
                         if not only_is_dotted:
-                            word_info = self._row_results[row_index].table_info
-                            idioms_info = self._row_results[row_index].idioms
+                            word_info = self._row_results[result_index].table_info
+                            idioms_info = self._row_results[result_index].idioms
 
                             self._fill_data(sheet_name, word_info, row_index)
-                            self._find_idioms(sheet_name, idioms_info, row_index, word)
+                            self._find_idioms(sheet_name, idioms_info, word)
 
                 except IndexError as idx_err:
-                    print("Error: Index out of range while updating dataframe:", idx_err)
+                    raise idx_err
                 except Exception as e:
                     print(f"Error occurred while updating dataframe at sheet :'{sheet_name}' "
                           f" at row_index {row_index}:", e)
@@ -124,7 +128,7 @@ class DataProcessor:
         except Exception as e:
             raise ValueError(f"Error occurred while filling dataframe, at sheetname {sheet_name}, with the wordinfo: {word_info}: {e}")
 
-    def _find_idioms(self, sheet_name, idioms_info, row_index, word):
+    def _find_idioms(self, sheet_name, idioms_info, word):
         try:
             if idioms_info and len(idioms_info) > 0:  # sometimes few table
                 self._idioms.append(idioms_info)
@@ -136,4 +140,3 @@ class DataProcessor:
         idioms_df = pd.DataFrame({'full_idioms': flattened_idioms})
 
         self.dataframes["idioms"] = idioms_df
-
